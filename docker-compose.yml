@@ -1,14 +1,16 @@
 version: '3.9'
 
 services:
-  flowers4you:
+  flowers4you-api:
     build: .
-    container_name: flowers4you
+    container_name: flowers4you-api
     ports:
       - "8080:8080"
-    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/flowers4you?sslmode=disable
     depends_on:
       - db
+      - migrate
 
   db:
     image: postgres:16
@@ -20,6 +22,19 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    restart: unless-stopped
+
+  migrate:
+    image: migrate/migrate
+    depends_on:
+      - db
+    command: [
+      "-path", "/migrations",
+      "-database", "postgres://postgres:postgres@db:5432/flowers4you?sslmode=disable",
+      "up"
+    ]
+    volumes:
+      - ./migrations:/migrations
 
 volumes:
   pgdata:
