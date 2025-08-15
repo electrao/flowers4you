@@ -20,55 +20,7 @@ type Message struct {
 
 var db *sql.DB
 
-// In-memory data
-// var messages = []Message{
-// 	{ID: 1, Text: "Hello, World!"},
-// 	{ID: 2, Text: "Bonjour, Monde!"},
-// }
-
 func main() {
-	// r := chi.NewRouter()
-	// r.Use(middleware.Logger)
-
-	// // Routes
-	// r.Get("/messages", getMessages)
-	// r.Post("/messages", createMessage)
-
-	// http.ListenAndServe(":8080", r)
-
-	//#####22222
-
-	// var err error
-
-	// // DB connection from env vars (docker-compose will set these)
-	// connStr := os.Getenv("DATABASE_URL")
-	// if connStr == "" {
-	// 	connStr = "postgres://user:pass@db:5432/mydb?sslmode=disable"
-	// }
-
-	// db, err = sql.Open("postgres", connStr)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// // Ensure table exists
-	// _, err = db.Exec(`CREATE TABLE IF NOT EXISTS messages (
-	// 	id SERIAL PRIMARY KEY,
-	// 	text TEXT NOT NULL
-	// )`)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// r := chi.NewRouter()
-	// r.Use(middleware.Logger)
-
-	// r.Get("/messages", getMessages)
-	// r.Post("/messages", createMessage)
-
-	// log.Println("API running on :8080")
-	// http.ListenAndServe(":8080", r)
-
 	// Read DATABASE_URL from environment or fallback to local
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
@@ -99,9 +51,6 @@ func main() {
 
 // Handlers
 func getMessages(w http.ResponseWriter, r *http.Request) {
-	// w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(messages)
-
 	rows, err := db.Query("SELECT id, text FROM messages ORDER BY id ASC")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -124,19 +73,6 @@ func getMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 func createMessage(w http.ResponseWriter, r *http.Request) {
-	// var msg Message
-	// err := json.NewDecoder(r.Body).Decode(&msg)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
-	// msg.ID = len(messages) + 1
-	// messages = append(messages, msg)
-
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusCreated)
-	// json.NewEncoder(w).Encode(msg)
-
 	var msg Message
 	if err := json.NewDecoder(r.Body).Decode(&msg); err != nil {
 		http.Error(w, err.Error(), 400)
